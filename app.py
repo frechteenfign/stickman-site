@@ -5,28 +5,28 @@ import edge_tts
 import streamlit as st
 from moviepy.editor import ImageClip, AudioFileClip
 
-# إعدادات شكل الموقع
-st.set_page_config(page_title="مصنع ستيك مان", page_icon="🎬")
+# Page Configuration
+st.set_page_config(page_title="Stickman Factory", page_icon="🎬")
 
-st.title("🎬 مصنع فيديوهات الـ Stickman")
-st.write("اكتب قصة قصيرة ووصف المشهد لتوليد الفيديو!")
+st.title("🎬 Stickman Video Factory")
+st.write("Write a short story and describe the scene to generate your horror video!")
 
-# صناديق الكتابة للمستخدم
-story_text = st.text_area("✍️ اكتب نص القصة (بالعربي):")
-image_prompt = st.text_input("👁️ وصف المشهد (بالإنجليزي):")
+# User Inputs
+story_text = st.text_area("✍️ Write your Story Script (in English):")
+image_prompt = st.text_input("👁️ Describe the Scene / Image Prompt (in English):")
 
-# زر التشغيل
-if st.button("🚀 ابدأ التوليد"):
+# Run Button
+if st.button("🚀 Start Generation"):
     if not story_text or not image_prompt:
-        st.error("⚠️ يرجى ملء الحقول أولاً!")
+        st.error("⚠️ Please fill in all fields first!")
     else:
         tmp_image = "temp_stickman.jpg"
         tmp_audio = "temp_voice.mp3"
         final_video = "stickman_shorts.mp4"
         
-        with st.spinner("⏳ جاري صنع الفيديو... انتظر دقيقة"):
+        with st.spinner("⏳ Creating your video... Please wait a moment"):
             try:
-                # 1. توليد الصورة
+                # 1. Generate Image using Pollinations AI
                 style_booster = ", dark horror stickman style, black background, 4k"
                 cleaned_prompt = (image_prompt + style_booster).replace(" ", "%20")
                 img_url = f"https://image.pollinations.ai/p/{cleaned_prompt}?width=720&height=1280"
@@ -35,11 +35,11 @@ if st.button("🚀 ابدأ التوليد"):
                 with open(tmp_image, "wb") as f:
                     f.write(img_res.content)
                 
-                # 2. توليد الصوت
-                communicate = edge_tts.Communicate(story_text, "ar-EG-ShakirNeural")
+                # 2. Generate Voiceover (Deep English Voice)
+                communicate = edge_tts.Communicate(story_text, "en-US-BrianNeural")
                 asyncio.run(communicate.save(tmp_audio))
                 
-                # 3. دمج الفيديو
+                # 3. Merge Video and Audio
                 audio_clip = AudioFileClip(tmp_audio)
                 image_clip = ImageClip(tmp_image).set_duration(audio_clip.duration)
                 video_clip = image_clip.set_audio(audio_clip)
@@ -49,13 +49,13 @@ if st.button("🚀 ابدأ التوليد"):
                 image_clip.close()
                 video_clip.close()
                 
-                # عرض النتيجة
-                st.success("🎉 تم صنع الفيديو بنجاح!")
+                # Display the final video
+                st.success("🎉 Video created successfully!")
                 st.video(final_video)
                 
-                # حذف الملفات المؤقتة
+                # Clean up temporary files
                 if os.path.exists(tmp_image): os.remove(tmp_image)
                 if os.path.exists(tmp_audio): os.remove(tmp_audio)
                 
             except Exception as e:
-                st.error(f"❌ حدث خطأ: {e}")
+                st.error(f"❌ An error occurred: {e}")
