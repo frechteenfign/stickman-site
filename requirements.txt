@@ -1,0 +1,5 @@
+streamlist
+requests 
+edge-tts
+moviepy
+pillow
