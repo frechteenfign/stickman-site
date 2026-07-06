@@ -12,8 +12,14 @@ st.title("🎬 Stickman Video Factory")
 st.write("Write a short story and describe the scene to generate your horror video!")
 
 # User Inputs
-story_text = st.text_area("✍️ Write your Story Script (in English):")
-image_prompt = st.text_input("👁️ Describe the Scene / Image Prompt (in English):")
+story_text = st.text_area("✍️ Write your Story Script:")
+image_prompt = st.text_input("👁️ Describe the Scene / Image Prompt:")
+
+# Video Duration Selection
+video_type = st.radio(
+    "⏳ Video Duration & Format:",
+    ["Under 1 minute (Vertical - TikTok / Shorts)", "Over 1 minute (Horizontal - YouTube Long-form)"]
+)
 
 # Run Button
 if st.button("🚀 Start Generation"):
@@ -26,10 +32,16 @@ if st.button("🚀 Start Generation"):
         
         with st.spinner("⏳ Creating your video... Please wait a moment"):
             try:
+                # Set dimensions based on the chosen format
+                if "Under 1 minute" in video_type:
+                    width, height = 720, 1280 # Vertical for Shorts/TikTok
+                else:
+                    width, height = 1280, 720 # Horizontal for YouTube Long-form
+
                 # 1. Generate Image using Pollinations AI
                 style_booster = ", dark horror stickman style, black background, 4k"
                 cleaned_prompt = (image_prompt + style_booster).replace(" ", "%20")
-                img_url = f"https://image.pollinations.ai/p/{cleaned_prompt}?width=720&height=1280"
+                img_url = f"https://image.pollinations.ai/p/{cleaned_prompt}?width={width}&height={height}"
                 
                 img_res = requests.get(img_url)
                 with open(tmp_image, "wb") as f:
